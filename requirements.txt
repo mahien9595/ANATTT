@@ -1,0 +1,9 @@
+# Phụ thuộc của công cụ kiểm tra ANATTT
+# Cài đặt: pip install -r requirements.txt
+
+python-docx>=0.8.11   # Đọc/ghi file biên bản .docx
+pyzipper>=0.3.6       # Nén file log lỗi có mật khẩu (AES) - tùy chọn
+
+# Ghi chú:
+# - tkinter đi kèm sẵn với bản cài Python chuẩn trên Windows (không cần pip).
+# - Các mô-đun winreg, ctypes là thư viện chuẩn, chỉ có trên Windows.

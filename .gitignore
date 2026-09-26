@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+BienBan_KetQua_*
+*_audit.json
+CrashReport_*
+error_log_*
+build/
+dist/
+*.spec

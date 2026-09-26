@@ -1609,7 +1609,55 @@ def fill_form(template_path, output_path, malware_file, vuln_file, manual_data=N
 
     doc.save(output_path)
     print(f"\nĐã điền xong biên bản: {output_path}")
+
+    # Ghi nhật ký kiểm tra (audit) kèm mã băm biên bản để lưu vết, đối soát
+    # và bảo đảm tính toàn vẹn bằng chứng (chain-of-custody).
+    try:
+        write_audit_report(output_path, {
+            "ten_may": computer_name,
+            "he_dieu_hanh": os_info.get("os_display"),
+            "ngay_cai": os_info.get("ngay_cai"),
+            "mac": mac_addr,
+            "ip": ip_addr,
+            "cau_hinh": hw,
+            "diet_virus": av_name,
+            "phan_mem_chinh": top_apps,
+            "co_mat_khau": password_status,
+            "phan_loai_mang": network_class,
+            "ket_noi_internet": online_now,
+            "lo_hong": vuln_lines,
+            "ma_doc": malware_lines,
+            "thiet_bi_ngoai_vi": peripheral_lines,
+            "lich_su_internet": internet_history,
+            "quyen_admin": is_admin(),
+            "can_bo_kiem_tra": manual_data.get("ten_can_bo"),
+            "doi_tuong": manual_data.get("ten_doi_tuong"),
+            "dia_diem": manual_data.get("dia_diem"),
+        })
+    except Exception:
+        pass
+
     return output_path
+
+
+def write_audit_report(docx_path, data):
+    """Ghi file nhật ký kiểm tra (.json) cạnh biên bản .docx.
+    Bao gồm toàn bộ dữ liệu thu thập, thời điểm, phiên bản công cụ và
+    mã băm SHA256 của biên bản kết quả để xác minh tính toàn vẹn về sau.
+    Trả về đường dẫn file nhật ký, hoặc None nếu thất bại."""
+    report_path = os.path.splitext(docx_path)[0] + "_audit.json"
+    report = {
+        "cong_cu": APP_NAME,
+        "phien_ban": APP_VERSION,
+        "thoi_diem_kiem_tra": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "bien_ban": os.path.basename(docx_path),
+        "bien_ban_sha256": sha256_of_file(docx_path),
+        "du_lieu_thu_thap": data,
+    }
+    with open(report_path, "w", encoding="utf-8") as f:
+        json.dump(report, f, ensure_ascii=False, indent=2)
+    print(f"Đã ghi nhật ký kiểm tra: {report_path}")
+    return report_path
 
 APP_VERSION = "1.7"
 APP_NAME = "Công cụ kiểm tra ANATTT"
